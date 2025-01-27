@@ -7,7 +7,6 @@ $('#file-man').on('click', '#folder, #separator', function() {
     url: '',
     data: {aksi: 'simpan_path', path: path},
   });
-  //console.log(path);
   loadFolder(path);
 });
 
@@ -111,7 +110,6 @@ window.location.href = '?dl=' + nama_file;
 
 // Fungsi edit file
 function edit_file(nama_file) {
-  //$('#form_edit').show();
   $.ajax({
     type: 'POST',
     url: '',
@@ -124,7 +122,6 @@ function edit_file(nama_file) {
 
 // Fungsi rename file
 function rename(nama_file) {
-  //$('#form_edit').show();
   $.ajax({
     type: 'POST',
     url: '',
@@ -153,7 +150,6 @@ $.ajax({
 
 // Fungsi Chmod
 function cmod(nama_file) {
-  //$('#form_edit').show();
   $.ajax({
     type: 'POST',
     url: '',
@@ -178,6 +174,18 @@ $.ajax({
     reloadPage();
   }
 });
+}
+
+// Fungsi hexdump file
+function hxdump(nama_file) {
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: 'aksi=hexdump&nama_file=' + nama_file,
+    success: function(data) {
+      $('#konten').html(data);
+    }
+  });
 }
 
 function kirimForm() {
