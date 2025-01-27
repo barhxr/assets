@@ -53,6 +53,9 @@ function makeZip(nama, isi) {
     type: 'POST',
     url: '',
     data: data,
+    beforeSend: function() {
+      $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+    },
     success: function(data) {
       $('#konten').html(data);
       reloadPage();
@@ -66,6 +69,9 @@ function massZip(isi) {
     type: 'POST',
     url: '',
     data: data,
+    beforeSend: function() {
+      $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+    },
     success: function(data) {
       $('#konten').html(data);
       reloadPage();
@@ -80,6 +86,9 @@ function unZip(isi) {
     type: 'POST',
     url: '',
     data: data,
+    beforeSend: function() {
+      $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+    },
     success: function(data) {
       $('#konten').html(data);
       reloadPage();
@@ -95,6 +104,9 @@ function hapus(data) {
       type: 'POST',
       url: '',
       data: 'aksi=hapus_file&nama_file=' + data,
+      beforeSend: function() {
+      $('#konten').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+      },
       success: function(data) {
         $('#konten').html(data);
         reloadPage();
@@ -199,8 +211,6 @@ $.ajax({
   },
   success: function(data) {
   $('#simpan').html(data);
-  //$('#form_edit').hide();
-  //reloadPage();
   }
 });
 }
