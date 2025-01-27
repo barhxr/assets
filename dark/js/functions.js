@@ -37,31 +37,46 @@ function multiSelect() {
   $('input[name="check[]"]:checked').each(function() {
     checked.push($(this).val());
   });
+  var data = checked.join(',');
   if (action == 'delete') {
-    $.each(checked, function(index, value) {
-      hapus(value); // memanggil fungsi hapus untuk setiap file/folder yang dipilih
-    });
+    hapus(data);
   } else if (action == 'unzip') {
-    $.each(checked, function(index, value) {
-    unZip(value);// proses unzip
-    });
+    unZip(data);
   } else if (action == 'zip') {
     var nama_file = prompt("Enter zip name without .zip:");
-    $.ajax({
-      type: 'POST',
-      url: '',
-      data: 'aksi=makezip&nama_file=' + nama_file + '&check=' + checked.join(','),
-      success: function(data) {
-        $('#konten').html(data);
-        reloadPage();
-      }
-    });
+    makeZip(nama_file, data);
   }
 };
 
+function makeZip(nama, isi) {
+    var data = 'aksi=makezip&nama_file=' + nama + '&check=' + isi;
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: data,
+    success: function(data) {
+      $('#konten').html(data);
+      reloadPage();
+    }
+  });
+}
 
-function unZip(nama_file) {
-    var data = 'aksi=unziip&nama_file=' + nama_file;
+function massZip(isi) {
+    var data = 'aksi=makezip&nama_file=' + isi + '&check=' + isi;
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: data,
+    success: function(data) {
+      $('#konten').html(data);
+      reloadPage();
+    }
+  });
+}
+
+
+function unZip(isi) {
+    var data = 'aksi=unziip&nama_file=' + isi;
   $.ajax({
     type: 'POST',
     url: '',
@@ -76,28 +91,16 @@ function unZip(nama_file) {
 
 
 // Fungsi hapus file/folder
-function hapus(nama_file) {
-  if (typeof nama_file === 'array') {
+function hapus(data) {
     $.ajax({
       type: 'POST',
       url: '',
-      data: 'aksi=hapus_file&nama_file=' + nama_file.join(','),
+      data: 'aksi=hapus_file&nama_file=' + data,
       success: function(data) {
         $('#konten').html(data);
         reloadPage();
       }
     });
-  } else {
-    $.ajax({
-      type: 'POST',
-      url: '',
-      data: 'aksi=hapus_file&nama_file=' + nama_file,
-      success: function(data) {
-        $('#konten').html(data);
-        reloadPage();
-      }
-    });
-  }
 }
 
 
@@ -112,7 +115,7 @@ function hapus(nama_file) {
         $.ajax({
           type: 'POST',
           url: '',
-          data: 'aksi=edit_file&nama_file=' + nama_file,
+          data: 'aksi=form_edit&nama_file=' + nama_file,
           success: function(data) {
             $('#konten').html(data);
           }
@@ -196,9 +199,7 @@ function hapus(nama_file) {
 
     $('#form_upload_file').submit(function(e) {
       e.preventDefault();
-      var file = $('#file')[0].files[0];
-      var formData = new FormData();
-      formData.append('file', file);
+      var formData = new FormData(this);
       formData.append('aksi', 'upload_file');
 
       $.ajax({
@@ -375,14 +376,50 @@ function hapus(nama_file) {
   HighlightedCode.useTheme('github-dark');
 })(self);
 
-function checkAll(isChecked) {
-  if(isChecked) {
-    $('input[name="check[]"]').each(function() { 
-      this.checked = true; 
+function checks() {
+      $("td").click(function (e) {
+            var c = $(this).closest("tr").find("input:checkbox").get(0);
+            e.target != c && (c.checked = !c.checked);
+        });
+      $("#selectAll").change(function() {
+        if (this.checked) {
+            $('input[name="check[]"]').each(function() {
+                this.checked=true;
+            });
+        } else {
+            $('input[name="check[]"]').each(function() {
+                this.checked=false;
+            });
+        }
     });
-  } else {
-    $('input[name="check[]"]').each(function() {
-      this.checked = false;
+
+    $('input[name="check[]"]').click(function () {
+        if ($(this).is(":checked")) {
+            var isAllChecked = 0;
+
+            $('input[name="check[]"]').each(function() {
+                if (!this.checked)
+                    isAllChecked = 1;
+            });
+
+            if (isAllChecked == 0) {
+                $("#selectAll").prop("checked", true);
+            }     
+        }
+        else {
+            $("#selectAll").prop("checked", false);
+        }
     });
-  }
+}
+
+function command(){
+  const command = document.getElementById("command");
+      if (command) {
+        command.addEventListener("keydown", function(e) {
+          if (e.key === "Enter") {
+            kirimcmd();
+            command.value = "";
+          }
+        });
+      }
 }
