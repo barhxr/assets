@@ -323,10 +323,10 @@ $.ajax({
   url: '',
   data: formData + '&aksi=backcon',
   beforeSend: function() {
-    $('#output').html('<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="sr-only">Loading...</span></div></div>');
+    $('#output').html('<div class="alert alert-info alert-dismissible fade show" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
   },
   success: function(data) {
-  $('#output').html('<div class="alert alert-info alert-dismissible fade show" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+  $('#output').html(data);
   }
 });
 }
