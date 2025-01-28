@@ -321,7 +321,7 @@ case 'buka_folder':
     // Tampilkan file
     foreach ($files as $file) {
         $size = formatSize(filesize($path . '/' . $file));
-        $ext = pathinfo($file, PATHINFO_EXTENSION);
+        $ext = pathinfo(strtolower($file), PATHINFO_EXTENSION);
         $real = false;
         foreach ($ektensi as $type => $extensions) {
             if (in_array($ext, $extensions)) {
@@ -336,7 +336,7 @@ case 'buka_folder':
             $ikon_default = '<i class="fa fa-xl fa-file"></i>';
             $found = false;
             foreach ($ektensi as $ic => $value) {
-                if (validasi($ext, $value) or in_array(strtolower($nf), array_map('strtolower', $value))) {
+                if (validasi($ext, $value) or in_array(strtolower($nf), $value)) {
                     echo isset($ikon[$ic]) ? $ikon[$ic] : $ikon_default;
                     $found = true;
                     break;
@@ -1427,7 +1427,7 @@ function edit_file($nama_file, $isi_file) {
 function form_edit($nama_file) {
   if($GLOBALS['func'][5]($nama_file)){
     $konten = $GLOBALS['func'][10]($GLOBALS['func'][11]($nama_file));
-    $ext = pathinfo($nama_file);
+    $ext = pathinfo(strtolower($nama_file));
     $eks = $ext['extension'];
     file_info($nama_file);
     if(validasi($eks,$GLOBALS['ektensi']['image'])){
@@ -1441,10 +1441,7 @@ function form_edit($nama_file) {
     <input type="hidden" name="aksi" value="edit_file">';
     $highlight = false;
     foreach ($GLOBALS['ektensi'] as $teks => $value) {
-        if ($teks === 'plaintext') {
-            continue;
-        }
-        if (in_array($eks, $value) or in_array(strtolower(basename($nama_file)), array_map('strtolower', $value))) {
+        if (in_array($eks, $value) or in_array(strtolower(basename($nama_file)), $value)) {
             $highlight = true;
             $bahasa = $teks;
             break;
