@@ -330,7 +330,8 @@ function bc() {
         },
         success: function(data) {
             $('#output').html(data);
-            $('#bc_from input').attr('disabled', false);
+            $('#bcon input').attr('disabled', false);
+            $('#bcon select').attr('disabled', false);
             btn.attr('disabled', false);
         }
     });
