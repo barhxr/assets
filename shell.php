@@ -1468,12 +1468,20 @@ function form_edit($nama_file) {
 }
 
 function file_info($nama_file){
-    $ext = pathinfo($nama_file);
+    $ext = pathinfo($nama_file, PATHINFO_EXTENSION);
+    $real = false;
+    foreach ($GLOBALS['ektensi'] as $type => $extensions) {
+        if (in_array($ext, $extensions)) {
+            $real = true;
+            break;
+        }
+    }
+    $ext = ($real) ? $ext : '-';
     if(!$GLOBALS['func'][2]($nama_file)){
     echo '
     <p>
     File Name : <a title="Rename" href="#" onclick="rename(\''.$nama_file.'\')">'.basename($nama_file).'</a>
-    <br>File Type : <font style="text-transform: uppercase;">'.$ext['extension'].'</font>
+    <br>File Type : <font style="text-transform: uppercase;">'.$ext.'</font>
     <br>File Size : ';
     $size = filesize($nama_file);
     echo formatSize($size);
