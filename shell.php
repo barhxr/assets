@@ -63,20 +63,25 @@ $ektensi = array(
     'audio' => ['aa', 'aac', 'aax', 'act', 'aiff', 'alac', 'amr', 'ape', 'au', 'awb', 'dss', 'dvf', 'flac', 'gsm', 'iklax', 'ivs', 'm4a', 'm4b', 'mmf', 'movpkg', 'mp3', 'mpc', 'msv', 'nmf', 'oga', 'mogg', 'opus', 'rm', 'raw', 'rf64', 'sln', 'tta', 'voc', 'vox', 'wav', 'wma', 'wv', '8svx', 'cda'],
     'video' => ['webm', 'mkv', 'flv', 'vob', 'ogv', 'ogg', 'drc', 'givf', 'mng', 'avi', 'MTS', 'M2TS', 'TS', 'mov', 'qt', 'wmv', 'yuv', 'rm', 'rmvb', 'viv', 'asf', 'amv', 'mp4', 'm4p', 'm4v', 'mpg', 'mpeg', 'm2v', 'm4v', 'svi', '3gp', '3g2', 'mxf', 'roq', 'nsv', 'flv', 'f4v', 'f4p', 'f4a', 'f4b'],
     'archive' => ['tar', 'zip', 'rar', 'r00', 'ace', 'arj', 'bz', 'bz2', 'tbz', 'tbz2', 'tgz', 'uu', 'xxe', 'cab', 'gz', 'xz', 'lha', 'lzh', 'pbk', 'uuf', '7z'],
-    'javascript' => ['js', 'vbs', 'java', 'json', 'jsp'],
-    'plaintext' => ['txt', 'log', 'ini', 'bak', 'bat', 'bin', 'conf', 'dat', 'inf', 'cfg', 'md'],
-    'html' => ['html', 'htm', 'shtml', 'xhtml', 'xml', 'inc', 'tpl', 'tmpl'],
+    'html' => ['html', 'htm', 'shtml', 'xhtml', 'xml', 'inc', 'tpl', 'tmpl', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist', 'svg'],
+    'javascript' => ['js', 'jsx'],
+    'css' => ['css', 'scss'],
     'php' => ['php', 'php2', 'php3', 'php4', 'php5', 'php7', 'phtml', 'phps'],
     'apache' => ['htaccess', 'htpasswd', 'ht', 'hta', 'env'],
-    'bash' => ['sh', 'bash'],
-    'java' => ['java'],
-    'json' => ['json'],
-    'css' => ['css', 'scss'],
+    'plaintext' => ['txt', 'log', 'ini', 'bak', 'bat', 'bin', 'conf', 'dat', 'inf', 'cfg'],
+    'makefile' => ['makefile', 'mk', 'make', 'mak'],
+    'markdown' => ['markdown', 'md', 'mkdown', 'mkd'],
+    'c' => ['c', 'cpp', 'csharp', 'cs', 'h', 'hpp', 'cc', 'hh', 'c++', 'h++', 'cxx', 'hxx'],
+    'golang' => ['go', 'golang'],
+    'vb' => ['vbnet', 'vb', 'vbscript', 'vbs'],
+    'bash' => ['sh', 'bash', 'zsh'],
+    'java' => ['java', 'jsp'],
+    'json' => ['json', 'jsonc'],
     'sql' => ['sql'],
-    'python' => ['py'],
+    'python' => ['py', 'gyp', 'python'],
     'lua' => ['lua'],
-    'ruby' => ['rb'],
-    'perl' => ['pl'],
+    'ruby' => ['rb', 'gemspec', 'podspec', 'thor', 'irb'],
+    'perl' => ['pl', 'pm', 'perl'],
     'yaml' => ['yaml', 'yml'],);
 $ftxt = '<i class="fa fa-file-lines fa-xl"></i>';
 $fcode = '<i class="fa fa-xl fa-file-code"></i>';
@@ -85,18 +90,25 @@ $ikon = array(
     'image' => '<i class="fa fa-xl fa-file-image"></i>',
     'video' => '<i class="fa fa-xl fa-file-video"></i>',
     'audio' => '<i class="fa fa-xl fa-file-audio"></i>',
-    'php' => $fcode,
     'html' => '<i class="fa-brands fa-html5 fa-xl"></i>',
+    'php' => $fcode,
     'css' => $fcode,
     'javascript' => $fcode,
     'json' => $fcode,
     'sql' => $fcode,
     'python' => $fcode,
+    'c' => $fcode,
     'lua' => $fcode,
     'ruby' => $fcode,
     'perl' => $fcode,
+    'java' => $fcode,
+    'vb' => $fcode,
+    'golang' => $fcode,
+    'bash' => $fcode,
     'yaml' => $fcode,
     'apache' => $ftxt,
+    'makefile' => $ftxt,
+    'markdown' => $ftxt,
     'plaintext' => $ftxt,
 );
 
@@ -318,12 +330,13 @@ case 'buka_folder':
             }
         }
         $ext = ($real) ? $ext : '-';
+        $nf = basename($file);
       echo '<tr>';
       echo "<td><input class='form-check-input checkbox' type='checkbox' name='check[]' value='$file'>&nbsp;&nbsp;"; 
             $ikon_default = '<i class="fa fa-xl fa-file"></i>';
             $found = false;
             foreach ($ektensi as $ic => $value) {
-                if (validasi($ext, $value)) {
+                if (validasi($ext, $value) or in_array(strtolower($nf), array_map('strtolower', $value))) {
                     echo isset($ikon[$ic]) ? $ikon[$ic] : $ikon_default;
                     $found = true;
                     break;
@@ -1431,14 +1444,14 @@ function form_edit($nama_file) {
         if ($teks === 'plaintext') {
             continue;
         }
-        if (in_array($eks, $value)) {
+        if (in_array($eks, $value) or in_array(strtolower(basename($nama_file)), array_map('strtolower', $value))) {
             $highlight = true;
             $bahasa = $teks;
             break;
         }
     }
     if($highlight){
-        echo '<textarea is="highlighted-code" cols="80" rows="12" data-language="'.$bahasa.'" tab-size="2" style="max-height: 500px; min-height: 250px;" class="form-control w-100 m-0" name="isi_file">'.$konten.'</textarea>';
+        echo '<textarea is="highlighted-code" cols="80" rows="12" language="'.$bahasa.'" tab-size="2" style="max-height: 500px; min-height: 250px;" class="form-control w-100 m-0" name="isi_file">'.$konten.'</textarea>';
     } else{
         echo '<textarea cols="80" rows="12" style="max-height: 500px; min-height: 250px;" class="form-control bg-dark w-100 m-0 text-white" name="isi_file">'.$konten.'</textarea>';
     }
