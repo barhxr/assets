@@ -323,7 +323,7 @@ $.ajax({
   url: '',
   data: formData + '&aksi=backcon',
   beforeSend: function() {
-    $('#output').html('<div class="alert alert-info alert-dismissible fade show" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+    $('#output').html('<div class="alert alert-info" role="alert"><i class="fa fa-exclamation-circle me-2"></i><b>INFO : </b>Please check your Terminal for result.</div>');
   },
   success: function(data) {
   $('#output').html(data);
